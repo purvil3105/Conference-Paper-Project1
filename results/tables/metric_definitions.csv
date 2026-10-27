@@ -1,0 +1,10 @@
+metric,definition,denominator
+p_on_time,On-time completions / deadline-evaluable cohort E(H). Primary metric.,|E(H)|
+p_miss,"1 - p_on_time (same information, not an independent gain).",|E(H)|
+preamble_success_prob,Singleton preamble successes / transmitted preambles (attempt-conditioned).,transmitted preamble attempts
+collision_prob_devices,Devices on collided choices / transmitted preambles.,transmitted preamble attempts
+collision_prob_choices,Collided choices / occupied choices (choice-level).,occupied choices
+delay_median_s / p95 / p99,Arrival-to-completion delay among COMPLETED requests (survivorship-biased; always report with service outcomes).,completed requests
+dropped_total,Terminally dropped requests (retry-limit / overflow / expiry).,-
+resource_utilisation,(NPRACH reserved + Msg3 data used) / R_total over all windows.,sum of per-window R_total
+unresolved,"Arrived, non-terminal, deadline not yet matured at H (reported separately, never counted as success).",-

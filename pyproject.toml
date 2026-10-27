@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nbiot-rach"
+version = "0.1.0"
+description = "Deadline-aware joint random-access control for dense NB-IoT smart-meter networks: a mass-conserving discrete-event simulator with tabular Q-learning and a one-registry baseline suite."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+dependencies = [
+    "numpy==2.4.6",
+    "scipy==1.17.1",
+    "matplotlib==3.11.2",
+]
+
+[project.optional-dependencies]
+test = ["pytest==8.3.4"]
+
+[project.scripts]
+nbiot-smoke = "nbiot_rach.run_smoke_tests:run"
+nbiot-train = "nbiot_rach.run_training:main"
+nbiot-eval = "nbiot_rach.run_evaluation:main"
+nbiot-figures = "nbiot_rach.make_paper_outputs:main"
+nbiot-pilot = "nbiot_rach.run_pilot:main"
+
+[tool.setuptools]
+packages = ["nbiot_rach", "nbiot_rach.agents"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

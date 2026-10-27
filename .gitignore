@@ -1,0 +1,15 @@
+# Pilot results (results/) ARE committed as evidence; scratch runs are not.
+results_*/
+*.log
+*.zip
+zip/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+build/
+dist/

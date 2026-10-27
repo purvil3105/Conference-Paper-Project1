@@ -1,0 +1,70 @@
+{
+  "trained": {
+    "B2": [
+      "results\\checkpoints\\B2_s0.npz",
+      "results\\checkpoints\\B2_s1.npz"
+    ],
+    "B3": [
+      "results\\checkpoints\\B3_s0.npz",
+      "results\\checkpoints\\B3_s1.npz"
+    ],
+    "B4": [
+      "results\\checkpoints\\B4_s0.npz",
+      "results\\checkpoints\\B4_s1.npz"
+    ],
+    "B5": [
+      "results\\checkpoints\\B5_s0.npz",
+      "results\\checkpoints\\B5_s1.npz"
+    ]
+  },
+  "settings": {
+    "out_dir": "results",
+    "train_pop": 30000,
+    "episodes": 150,
+    "policy_seeds": [
+      0,
+      1
+    ],
+    "baselines": [
+      "B0",
+      "B1",
+      "B2",
+      "B3",
+      "B4",
+      "B5"
+    ],
+    "populations": [
+      10000,
+      20000,
+      30000,
+      50000,
+      75000,
+      100000
+    ],
+    "val_seeds": [
+      2001,
+      2002,
+      2003,
+      2004,
+      2005
+    ],
+    "test_seeds": [
+      3001,
+      3002,
+      3003,
+      3004,
+      3005
+    ],
+    "val_every": 50,
+    "label": "pilot"
+  },
+  "wall_clock_s": 529.5171573162079,
+  "runtime": {
+    "git_revision": "bf25905",
+    "python": "3.11.9",
+    "platform": "Windows-10-10.0.26300-SP0",
+    "numpy": "2.4.6",
+    "scipy": "1.17.1",
+    "matplotlib": "3.11.2"
+  }
+}

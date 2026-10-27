@@ -1,0 +1,33 @@
+methodology_section,requirement,code_location,test
+A. System model & event timeline,"10-step causal order per decision epoch",nbiot_rach/environment.py:step/_run_opportunity,tests/test_q_transition.py::test_next_state_replay_matches_decision_observation
+A. Service endpoint,"preamble success != RA completion != app delivery",nbiot_rach/environment.py:_contend; nbiot_rach/metrics.py,docs/model_assumptions.md sec1
+B. Request-state model,"5 mutually exclusive statuses; terminal states never re-enter queue",nbiot_rach/ledger.py,tests/test_conservation.py
+B. Mass conservation,"A(t)=C(t)+X(t)+B(t) after every event batch",nbiot_rach/ledger.py:assert_invariants,tests/test_conservation.py::test_conservation_every_step
+B. Explicit drops,"overflow/retry-limit = explicit recorded drop, no silent clipping",nbiot_rach/environment.py:_handle_failed,tests/test_conservation.py::test_overflow_is_an_explicit_drop
+C. AMI traffic,"periodic + separately parameterised event-triggered",nbiot_rach/traffic.py:generate_trace,tests/test_reproducibility.py::test_trace_generation_is_reproducible
+C. Beta(3\,4) burst,"inverse-CDF mapping to timestamps",nbiot_rach/traffic.py:beta34_inverse,nbiot_rach/run_smoke_tests.py
+C. Train/test seed split,"separate training/validation/test seed namespaces",nbiot_rach/config.py:TRAIN/VAL/TEST_SEEDS; nbiot_rach/training.py,n/a
+D. Joint action,"a=(p_A,backoff,NPRACH); p_A is admission not barring",nbiot_rach/actions.py:ActionRegistry,tests/test_action_delay.py
+D. Action registry,"every tuple + resource cost + effective-time + standards_status",nbiot_rach/actions.py:to_rows,n/a
+D. Resource feasibility,"R_RACH+R_DATA<=R_total; feasible action set",nbiot_rach/resource.py; nbiot_rach/actions.py:feasible_mask,tests/test_resource.py
+D. NPRACH-NPUSCH,"derived from calendar\, not assumed linear",nbiot_rach/resource.py; nbiot_rach/actions.py,tests/test_resource.py::test_feasible_mask_respects_budget
+E. Finite MDP / observations,"controller sees only permitted measurements",nbiot_rach/observation.py:ObservationModel,n/a
+E. State quantisation,"150-bin compact state; bin edges frozen",nbiot_rach/config.py; nbiot_rach/observation.py:encode,n/a
+F. Deadline-aware reward,"r=C_on/K - M_new/K - X_new/K - wq*Bnorm - wr*Rnorm",nbiot_rach/reward.py:compute_reward,tests/test_reward.py::test_reward_modes
+F. Event accounting,"each miss/drop counted once; miss and drop distinct",nbiot_rach/environment.py:_process_deadlines/_handle_failed,tests/test_reward.py::test_miss_then_drop_is_two_distinct_costs
+F. Reward ablations,"throughput-only / deadline-aware-no-resource / full",nbiot_rach/reward.py:compute_reward,tests/test_reward.py::test_reward_modes
+G. Tabular Q-learning,"Q update with actual next state; terminal zero continuation",nbiot_rach/agents/qlearning.py:update,tests/test_q_transition.py::test_terminal_target_has_no_continuation
+G. Feasible-action masking,"selection and next-state max over feasible set",nbiot_rach/agents/qlearning.py,tests/test_q_transition.py::test_non_terminal_uses_feasible_next_max
+G. Frozen evaluation,"epsilon=0; no Q update during testing",nbiot_rach/agents/qlearning.py:freeze; nbiot_rach/training.py,tests/test_q_transition.py::test_frozen_policy_does_not_change_q
+G. Learning schedule report,"alpha/gamma/epsilon/seeds/budget logged",nbiot_rach/persistence.py:save_checkpoint,n/a
+H. Baseline registry,"one registry drives names/tables/figures; B0-B5 real\, B6 absent",nbiot_rach/baseline_registry.py,n/a
+I. Primary metric,"on-time fraction over cohort E(H); NaN when undefined",nbiot_rach/metrics.py:episode_metrics,n/a
+I. Delay percentiles,"median/p95/p99 among completed\, with service outcomes",nbiot_rach/metrics.py; nbiot_rach/timeutils.py:percentile,n/a
+I. Attempt-conditioned success,"successes/transmitted attempts (exact denominator)",nbiot_rach/metrics.py:preamble_success_prob,n/a
+I. Memory/latency,"measured separately from simulator overhead",nbiot_rach/training.py:measure_controller_cost,n/a
+I. Uncertainty,"bootstrap CI; paired trace-level differences",nbiot_rach/metrics.py:bootstrap_ci/paired_difference,n/a
+J. Validation gates,"conservation/drain/contention/boundary/feasibility/delay/Q/repro",nbiot_rach/run_smoke_tests.py; tests/,tests/ (all)
+J. Reproducibility,"same seed+config+trace reproduces result",nbiot_rach/rng.py,tests/test_reproducibility.py
+J. Logging/provenance,"git rev\, versions\, config\, seeds\, registry in checkpoint",nbiot_rach/persistence.py:runtime_metadata/save_checkpoint,n/a
+Deadline boundary clarification,"completion at d-1\,d on time; d+1 late",nbiot_rach/environment.py:_process_deadlines (completion_us<=deadline_us),tests/test_deadline_boundary.py::test_completion_boundary
+Cohort/horizon fix,"fixed arrival cohort\, run until all deadlines matured",nbiot_rach/metrics.py:episode_metrics (E(H)); nbiot_rach/config.py horizon,n/a

@@ -1,0 +1,6 @@
+# Pinned to the versions this codebase was developed and tested against
+# (Python 3.11.9). See pyproject.toml for the editable-install metadata.
+numpy==2.4.6
+scipy==1.17.1
+matplotlib==3.11.2
+pytest==8.3.4

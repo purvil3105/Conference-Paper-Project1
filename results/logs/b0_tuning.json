@@ -1,0 +1,7 @@
+{
+  "action_id": 67,
+  "val_p_on": 1.0,
+  "pA": 0.05,
+  "backoff_ms": 0,
+  "nprach_config_id": 4
+}

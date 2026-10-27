@@ -1,0 +1,23 @@
+Algorithm 1. Training and frozen-policy evaluation (as implemented)
+
+Input: traffic model, request-state ledger, feasible action registry A(s),
+       state encoder, reward weights, alpha schedule, gamma, epsilon schedule
+Initialise Q(s,a)=0 for all defined states and feasible actions   [agents/qlearning.py]
+For each training episode:                                          [training.train_qlearning]
+    Reset simulator, ledger, timers, counters, logs                 [environment.reset]
+    While the episode has not terminated:
+        (1) create arrivals (implicit: generated when t passes arrival)   [environment._eligible_requests]
+        (2) process matured deadlines                               [environment._process_deadlines]
+        (3) update retry timers; release eligible BACKOFF requests  [environment._run_opportunity]
+        (4) observe permitted measurements; encode state s          [observation.ObservationModel]
+        (5) select feasible action a (epsilon-greedy)               [agents/qlearning.select_action]
+        (6) schedule a; apply at next NPRACH boundary after delay   [environment.step / _promote_pending_if_due]
+        (7) simulate preamble contention + RAR + Msg3 + CR          [environment._contend]
+        (8) record completions, drops, deadline events, resources   [ledger + resource.ResourceCalendar]
+            Assert A(t)=C(t)+X(t)+B(t); abort run if violated        [ledger.assert_invariants]
+        (9) compute reward from realised events                     [reward.compute_reward]
+       (10) observe the ACTUAL next state s'; Q-update              [environment.step -> agents/qlearning.update]
+            target = reward (terminal) else reward + gamma*max_{a' in A(s')} Q(s',a')
+Freeze policy; set epsilon = 0                                      [agents/qlearning.freeze]
+Evaluate on independent held-out traces; do not update Q            [training.evaluate_policy]
+Report request-level service, resource use, uncertainty, cost       [metrics.episode_metrics]

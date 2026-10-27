@@ -1,0 +1,52 @@
+{
+  "label": "pilot",
+  "wall_clock_s": 807.7006826400757,
+  "settings": {
+    "train_pop": 30000,
+    "episodes": 150,
+    "policy_seeds": [
+      0,
+      1
+    ],
+    "baselines": [
+      "B0",
+      "B1",
+      "B2",
+      "B3",
+      "B4",
+      "B5"
+    ],
+    "populations": [
+      10000,
+      20000,
+      30000,
+      50000,
+      75000,
+      100000
+    ],
+    "test_seeds": [
+      3001,
+      3002,
+      3003,
+      3004,
+      3005
+    ],
+    "val_seeds": [
+      2001,
+      2002,
+      2003,
+      2004,
+      2005
+    ]
+  },
+  "b0_action_id": 67,
+  "runtime": {
+    "git_revision": "bf25905",
+    "python": "3.11.9",
+    "platform": "Windows-10-10.0.26300-SP0",
+    "numpy": "2.4.6",
+    "scipy": "1.17.1",
+    "matplotlib": "3.11.2"
+  },
+  "note": "PILOT (small budget). Not a full research experiment."
+}
