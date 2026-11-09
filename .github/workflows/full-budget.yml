@@ -1,0 +1,83 @@
+# Full-budget NB-IoT RACH experiment, sharded across GitHub-hosted runners.
+#
+#   train (12 parallel jobs): each trains 2 of the 24 tasks
+#       core:  B2-B5 x policy seeds 0-4, 2000 episodes, train_pop 30000
+#       ablation (reward mode): throughput_only, deadline_aware_no_resource x seeds 0-1
+#   evaluate (1 job): merges all checkpoints, then run_parallel resumes
+#       (skips all training) -> B0 tuning, load sweep on 20 held-out test
+#       traces, reward-ablation table, figures, manifest.
+#
+# Result: the "results_full" artifact on the workflow run page.
+name: full-budget-run
+
+on:
+  push:
+    branches: [full-budget-run]
+  workflow_dispatch:
+
+env:
+  OMP_NUM_THREADS: "1"
+  OPENBLAS_NUM_THREADS: "1"
+  MKL_NUM_THREADS: "1"
+  RUN_ARGS: >-
+    --out-dir results_full --episodes 2000 --train-pop 30000
+    --policy-seeds 0 1 2 3 4 --ablation-seeds 0 1 --ablation-groups mode
+    --n-test 20 --n-val 8 --val-every 200 --max-workers 16
+
+jobs:
+  train:
+    name: train shard ${{ matrix.shard }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11.9"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: nproc && python -m nbiot_rach.run_smoke_tests
+      - name: Train shard
+        run: python -m nbiot_rach.run_parallel $RUN_ARGS --num-shards 12 --shard-index ${{ matrix.shard }} --train-only
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ckpt-shard-${{ matrix.shard }}
+          path: results_full/
+          if-no-files-found: error
+          retention-days: 14
+
+  evaluate:
+    needs: train
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11.9"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: ckpt-shard-*
+          path: results_full/
+          merge-multiple: true
+      - name: Check all 24 checkpoints are present
+        run: |
+          n_core=$(ls results_full/checkpoints/*.npz | wc -l)
+          n_abl=$(ls results_full/checkpoints_ablation/*.npz | wc -l)
+          echo "core=$n_core (expect 20)  ablation=$n_abl (expect 4)"
+          test "$n_core" -eq 20 && test "$n_abl" -eq 4
+      - name: Evaluate + figures + tables (training is skipped via resume)
+        shell: bash
+        run: python -m nbiot_rach.run_parallel $RUN_ARGS 2>&1 | tee results_full/run_log.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: results_full
+          path: results_full/
+          if-no-files-found: error
+          retention-days: 90
