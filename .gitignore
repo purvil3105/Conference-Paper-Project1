@@ -3,6 +3,12 @@ results_*/
 *.log
 *.zip
 zip/
+logs/
+tests/
+run_log.txt
+checkpoints*/
+checkpoints_ablation/
+manifest.json
 
 # Python
 __pycache__/
@@ -13,3 +19,5 @@ __pycache__/
 venv/
 build/
 dist/
+tests/
+
